@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- noupdate: si el usuario cambia el prefijo, una actualización
+         del módulo no sobrescribe su configuración. -->
+    <data noupdate="1">
+        <record id="seq_bom_quote_request" model="ir.sequence">
+            <field name="name">Solicitud de presupuesto BOM</field>
+            <field name="code">bom.quote.request</field>
+            <field name="prefix">BOM/%(year)s/</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

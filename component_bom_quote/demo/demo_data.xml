@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Catálogo de ejemplo de un distribuidor de componentes -->
+    <record id="demo_lm358dr" model="product.template">
+        <field name="name">Amplificador operacional dual LM358 (SOIC-8)</field>
+        <field name="detailed_type">product</field>
+        <field name="default_code">CV-LM358</field>
+        <field name="mpn">LM358DR</field>
+        <field name="manufacturer_name">Texas Instruments</field>
+        <field name="package_type">smd</field>
+        <field name="list_price">0.32</field>
+    </record>
+    <record id="demo_ne555p" model="product.template">
+        <field name="name">Temporizador NE555 (DIP-8)</field>
+        <field name="detailed_type">product</field>
+        <field name="default_code">CV-NE555</field>
+        <field name="mpn">NE555P</field>
+        <field name="manufacturer_name">Texas Instruments</field>
+        <field name="package_type">tht</field>
+        <field name="list_price">0.28</field>
+    </record>
+    <record id="demo_stm32" model="product.template">
+        <field name="name">Microcontrolador STM32F103C8T6 (LQFP-48)</field>
+        <field name="detailed_type">product</field>
+        <field name="default_code">CV-STM32F103</field>
+        <field name="mpn">STM32F103C8T6</field>
+        <field name="manufacturer_name">STMicroelectronics</field>
+        <field name="package_type">smd</field>
+        <field name="list_price">3.95</field>
+    </record>
+    <record id="demo_1n4148" model="product.template">
+        <field name="name">Diodo de conmutación 1N4148W (SOD-123)</field>
+        <field name="detailed_type">product</field>
+        <field name="default_code">CV-1N4148W</field>
+        <field name="mpn">1N4148W-7-F</field>
+        <field name="manufacturer_name">Diodes Incorporated</field>
+        <field name="package_type">smd</field>
+        <field name="list_price">0.04</field>
+    </record>
+    <record id="demo_bc547" model="product.template">
+        <field name="name">Transistor NPN BC547B (TO-92)</field>
+        <field name="detailed_type">product</field>
+        <field name="default_code">CV-BC547B</field>
+        <field name="mpn">BC547B</field>
+        <field name="manufacturer_name">onsemi</field>
+        <field name="package_type">tht</field>
+        <field name="list_price">0.06</field>
+    </record>
+    <record id="demo_esp32" model="product.template">
+        <field name="name">Módulo Wi-Fi/Bluetooth ESP32-WROOM-32E</field>
+        <field name="detailed_type">product</field>
+        <field name="default_code">CV-ESP32</field>
+        <field name="mpn">ESP32-WROOM-32E</field>
+        <field name="manufacturer_name">Espressif</field>
+        <field name="package_type">module</field>
+        <field name="list_price">2.90</field>
+    </record>
+
+    <!-- Solicitud de ejemplo en texto libre, como llegaría por email -->
+    <record id="demo_request_email" model="bom.quote.request">
+        <field name="partner_id" ref="base.res_partner_2"/>
+        <field name="source_type">text</field>
+        <field name="raw_text">Buenos días,
+necesitamos presupuesto para el siguiente pedido:
+- 100x LM358DR
+- NE555 - 50 uds
+- 250 pcs STM32F103C8T6
+- 1N4148W7F x 1.000
+- XYZ-9999 x 10
+Gracias.</field>
+    </record>
+</odoo>

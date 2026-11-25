@@ -1,0 +1,7 @@
+Referencia;Cantidad;Descripción
+LM358DR;200;Amplificador operacional - placa de control
+NE555P;1.500;Temporizador
+STM32F103C8;50;MCU (referencia incompleta)
+1N4148W-7-F-TR;3.000;Diodo en bobina
+LM358DR;50;Misma referencia en la placa de potencia
+ABC-0000;10;Referencia que no existe en el catálogo

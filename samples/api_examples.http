@@ -1,0 +1,15 @@
+### Consultar stock de una referencia (formato REST Client de VS Code)
+GET http://localhost:8069/api/v1/components/LM358DR-TR/stock
+X-API-Key: cambia-esta-clave
+
+### Crear y procesar una solicitud desde otro sistema (web, n8n...)
+POST http://localhost:8069/api/v1/bom-quotes
+X-API-Key: cambia-esta-clave
+Content-Type: application/json
+
+{
+  "email": "compras@cliente-ejemplo.com",
+  "name": "Cliente Ejemplo S.L.",
+  "text": "100x LM358DR\nNE555 - 50 uds\n250 pcs STM32F103C8T6",
+  "use_ai": false
+}

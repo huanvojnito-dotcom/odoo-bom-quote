@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Herencia de vista: se añade una pestaña al formulario de producto
+         sin modificar la vista original (xpath + position). -->
+    <record id="product_template_form_view_component" model="ir.ui.view">
+        <field name="name">product.template.form.component.data</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Datos técnicos" name="component_data">
+                    <group>
+                        <group>
+                            <field name="mpn"/>
+                            <field name="manufacturer_name"/>
+                            <field name="package_type"/>
+                        </group>
+                        <group>
+                            <field name="rohs_compliant"/>
+                            <field name="datasheet_url" widget="url"/>
+                            <field name="mpn_normalized" groups="base.group_no_one"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Búsqueda: permite encontrar productos por MPN o fabricante. -->
+    <record id="product_template_search_view_component" model="ir.ui.view">
+        <field name="name">product.template.search.component.data</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="mpn"/>
+                <field name="manufacturer_name"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

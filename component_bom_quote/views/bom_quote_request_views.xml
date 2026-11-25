@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Lista de solicitudes -->
+    <record id="bom_quote_request_view_tree" model="ir.ui.view">
+        <field name="name">bom.quote.request.tree</field>
+        <field name="model">bom.quote.request</field>
+        <field name="arch" type="xml">
+            <tree decoration-muted="state == 'cancel'"
+                  decoration-success="state == 'quoted'">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="user_id" widget="many2one_avatar_user"/>
+                <field name="source_type"/>
+                <field name="line_count"/>
+                <field name="match_rate" widget="progressbar"/>
+                <field name="sale_order_id"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state == 'processed'"
+                       decoration-success="state == 'quoted'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Formulario -->
+    <record id="bom_quote_request_view_form" model="ir.ui.view">
+        <field name="name">bom.quote.request.form</field>
+        <field name="model">bom.quote.request</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <!-- En Odoo 17 la visibilidad se escribe como expresión
+                         Python directamente (ya no se usa attrs). -->
+                    <button name="action_process" type="object"
+                            string="Procesar BOM" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_create_quotation" type="object"
+                            string="Crear presupuesto" class="btn-primary"
+                            invisible="state != 'processed'"/>
+                    <button name="action_process" type="object"
+                            string="Volver a procesar"
+                            invisible="state != 'processed'"/>
+                    <button name="action_reset_to_draft" type="object"
+                            string="Pasar a borrador"
+                            invisible="state not in ('processed', 'cancel')"/>
+                    <button name="action_cancel" type="object"
+                            string="Cancelar"
+                            invisible="state in ('quoted', 'cancel')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,processed,quoted"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_sale_order" type="object"
+                                class="oe_stat_button" icon="fa-file-text-o"
+                                string="Presupuesto"
+                                invisible="not sale_order_id"/>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="partner_id"
+                                   readonly="state != 'draft'"/>
+                            <field name="user_id"/>
+                            <field name="company_id"
+                                   groups="base.group_multi_company"/>
+                            <field name="sale_order_id" readonly="1"
+                                   invisible="not sale_order_id"/>
+                        </group>
+                        <group>
+                            <field name="source_type" widget="radio"
+                                   readonly="state != 'draft'"/>
+                            <field name="bom_file" filename="bom_filename"
+                                   invisible="source_type != 'csv'"
+                                   readonly="state != 'draft'"/>
+                            <field name="bom_filename" invisible="1"/>
+                            <field name="use_ai"
+                                   invisible="source_type != 'text'"
+                                   readonly="state != 'draft'"/>
+                        </group>
+                    </group>
+                    <field name="raw_text" invisible="source_type != 'text'"
+                           readonly="state != 'draft'"
+                           placeholder="Pega aquí el email del cliente, por ejemplo:&#10;100x LM358DR&#10;NE555P - 50 uds&#10;250 pcs STM32F103C8T6"/>
+
+                    <!-- Resumen del resultado -->
+                    <group invisible="state == 'draft'">
+                        <group>
+                            <field name="line_count"/>
+                            <field name="matched_count"/>
+                        </group>
+                        <group>
+                            <field name="review_count"/>
+                            <field name="match_rate" widget="progressbar"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Referencias" name="lines">
+                            <!-- Colores: amarillo = revisar, rojo = no
+                                 encontrada. El comercial puede corregir el
+                                 producto antes de crear el presupuesto. -->
+                            <field name="line_ids"
+                                   readonly="state not in ('draft', 'processed')">
+                                <tree editable="bottom"
+                                      decoration-warning="match_method == 'fuzzy'"
+                                      decoration-danger="match_method == 'none'">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="requested_reference"/>
+                                    <field name="description" optional="hide"/>
+                                    <field name="quantity"/>
+                                    <field name="product_id"/>
+                                    <field name="match_method"/>
+                                    <field name="match_score"/>
+                                    <field name="alternative_product_ids"
+                                           widget="many2many_tags"
+                                           optional="show"/>
+                                    <field name="qty_available"/>
+                                    <field name="stock_status" widget="badge"
+                                           decoration-success="stock_status == 'available'"
+                                           decoration-warning="stock_status == 'partial'"
+                                           decoration-danger="stock_status == 'out'"/>
+                                    <field name="needs_review" column_invisible="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Búsqueda y filtros -->
+    <record id="bom_quote_request_view_search" model="ir.ui.view">
+        <field name="name">bom.quote.request.search</field>
+        <field name="model">bom.quote.request</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="line_ids" string="Referencia"
+                       filter_domain="[('line_ids.requested_reference', 'ilike', self)]"/>
+                <filter name="my_requests" string="Mis solicitudes"
+                        domain="[('user_id', '=', uid)]"/>
+                <separator/>
+                <filter name="draft" string="Borrador"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter name="processed" string="Pendientes de presupuesto"
+                        domain="[('state', '=', 'processed')]"/>
+                <filter name="to_review" string="Con líneas para revisar"
+                        domain="[('line_ids.needs_review', '=', True), ('state', '=', 'processed')]"/>
+                <group expand="0" string="Agrupar por">
+                    <filter name="group_partner" string="Cliente"
+                            context="{'group_by': 'partner_id'}"/>
+                    <filter name="group_state" string="Estado"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_bom_quote_request" model="ir.actions.act_window">
+        <field name="name">Presupuestos desde BOM</field>
+        <field name="res_model">bom.quote.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_my_requests': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crea tu primera solicitud de presupuesto desde una BOM
+            </p>
+            <p>
+                Sube el CSV del cliente o pega su email: el sistema identifica
+                las referencias y prepara el presupuesto automáticamente.
+            </p>
+        </field>
+    </record>
+</odoo>
